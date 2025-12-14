@@ -254,68 +254,51 @@ const urlDetector = {
    * @returns {boolean}
    */
   detectarMensajeDeCarga() {
+    console.log('🔍 [Carga] Iniciando detección de mensaje de carga...');
     const messagesContainer = document.querySelector('.MuiBox-root.mui-ylizsf');
     if (!messagesContainer) {
+      console.log('❌ [Carga] No se encontró el contenedor de mensajes');
       return false;
     }
     
     // Frase que indica que el cliente cargó (normalizada)
     const fraseObjetivo = 'segui los pasos a continuacion para que tu acr3dit4ci0n se procese sin demoras';
+    console.log(`🎯 [Carga] Buscando frase: "${fraseObjetivo}"`);
     
     // Obtener TODOS los mensajes
     const allMessages = messagesContainer.querySelectorAll('div[id^="message-"]');
     
     for (const message of allMessages) {
-      // Verificar que el mensaje sea de HOY
-      const timeContainer = message.querySelector('.MuiBox-root.mui-186zjq8[aria-label]');
-      if (!timeContainer) continue;
-      
-      const fullTimestamp = timeContainer.getAttribute('aria-label');
-      const timeElements = timeContainer.querySelectorAll('p.MuiTypography-root.mui-2ehu0i');
-      let relativeTime = null;
-      
-      for (let i = timeElements.length - 1; i >= 0; i--) {
-        const text = timeElements[i].textContent.trim();
-        if (text.includes('minuto') || text.includes('hora') || text.includes('día')) {
-          relativeTime = text;
-          break;
-        }
-      }
-      
-      const timeInfo = {
-        fullTimestamp: fullTimestamp,
-        relativeTime: relativeTime,
-        calculatedTime: this.calculateExactTime(relativeTime)
-      };
-      
-      // Solo buscar en mensajes de HOY
-      if (!this.esMensajeDeHoy(timeInfo)) continue;
+      // NO filtrar por timestamp - analizar TODOS los mensajes
+      // (los mensajes de carga pueden no tener timestamp visible)
       
       // Verificar si es mensaje del AGENTE (no del cliente)
       // Los mensajes del agente tienen clase específica o están alineados a la izquierda
       const esDelCliente = message.querySelector('[data-contact-message="true"]') || 
                           message.classList.contains('contact-message');
       
+      console.log(`🔍 [Carga] Mensaje analizado - Cliente: ${esDelCliente}, Texto: ${message.textContent.substring(0, 50)}...`);
+      
       if (esDelCliente) continue; // Saltar mensajes del cliente
       
-      // Buscar la frase en todos los <p> del mensaje
-      const paragraphs = message.querySelectorAll('p');
-      for (const p of paragraphs) {
-        const textoNormalizado = p.textContent
-          .toLowerCase()
-          .replace(/[áàäâ]/g, 'a')
-          .replace(/[éèëê]/g, 'e')
-          .replace(/[íìïî]/g, 'i')
-          .replace(/[óòöô]/g, 'o')
-          .replace(/[úùüû]/g, 'u')
-          .replace(/[.,!?¿¡]/g, '')
-          .replace(/\s+/g, ' ')
-          .trim();
-        
-        if (textoNormalizado.includes(fraseObjetivo)) {
-          console.log('✅ [URL Detector] Mensaje de CARGA detectado');
-          return true;
-        }
+      // Buscar la frase en TODO el texto del mensaje (no solo párrafos)
+      const textoCompleto = message.textContent;
+      const textoNormalizado = textoCompleto
+        .toLowerCase()
+        .replace(/[áàäâ]/g, 'a')
+        .replace(/[éèëê]/g, 'e')
+        .replace(/[íìïî]/g, 'i')
+        .replace(/[óòöô]/g, 'o')
+        .replace(/[úùüû]/g, 'u')
+        .replace(/[.,!?¿¡]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      console.log(`🔍 [Carga] Texto normalizado completo: ${textoNormalizado.substring(0, 100)}`);
+      
+      if (textoNormalizado.includes(fraseObjetivo)) {
+        console.log('✅ [URL Detector] Mensaje de CARGA detectado en texto completo');
+        return true;
       }
     }
     
@@ -615,3 +598,139 @@ const urlDetector = {
     return formattedTime;
   }
 };
+
+// ============================================
+// FUNCIÓN DE TEST - Ejecutar en consola
+// ============================================
+window.testDeteccionCarga = function() {
+  console.clear();
+  console.log('═══════════════════════════════════════════════════════');
+  console.log('🧪 INICIANDO TEST DE DETECCIÓN DE CARGA');
+  console.log('═══════════════════════════════════════════════════════\n');
+  
+  const fraseObjetivo = 'segui los pasos a continuacion para que tu acr3dit4ci0n se procese sin demoras';
+  console.log('📝 Frase que se busca (normalizada):');
+  console.log(`   "${fraseObjetivo}"\n`);
+  
+  // 1. Verificar contenedor
+  const messagesContainer = document.querySelector('.MuiBox-root.mui-ylizsf');
+  if (!messagesContainer) {
+    console.error('❌ ERROR: No se encontró el contenedor de mensajes');
+    console.log('   Selector: .MuiBox-root.mui-ylizsf');
+    return;
+  }
+  console.log('✅ Contenedor de mensajes encontrado\n');
+  
+  // 2. Obtener todos los mensajes
+  const allMessages = messagesContainer.querySelectorAll('div[id^="message-"]');
+  console.log(`📨 Total de mensajes en el chat: ${allMessages.length}\n`);
+  
+  if (allMessages.length === 0) {
+    console.error('❌ ERROR: No se encontraron mensajes');
+    return;
+  }
+  
+  let mensajesDeHoyCount = 0;
+  let mensajesDelAgenteCount = 0;
+  let encontrado = false;
+  
+  allMessages.forEach((message, index) => {
+    console.log(`\n─────────────────────────────────────────────────────────`);
+    console.log(`📬 MENSAJE #${index + 1}`);
+    
+    // Verificar tiempo
+    const timeContainer = message.querySelector('.MuiBox-root.mui-186zjq8[aria-label]');
+    if (!timeContainer) {
+      console.log('   ⏭️ Sin timestamp, saltando...');
+      return;
+    }
+    
+    const fullTimestamp = timeContainer.getAttribute('aria-label');
+    console.log(`   🕐 Timestamp: ${fullTimestamp}`);
+    
+    // Verificar si es de hoy
+    const timeElements = timeContainer.querySelectorAll('p.MuiTypography-root.mui-2ehu0i');
+    let relativeTime = null;
+    for (let i = timeElements.length - 1; i >= 0; i--) {
+      const text = timeElements[i].textContent.trim();
+      if (text.includes('minuto') || text.includes('hora') || text.includes('día')) {
+        relativeTime = text;
+        break;
+      }
+    }
+    
+    const timeInfo = {
+      fullTimestamp: fullTimestamp,
+      relativeTime: relativeTime,
+      calculatedTime: urlDetector.calculateExactTime(relativeTime)
+    };
+    
+    const esDeHoy = urlDetector.esMensajeDeHoy(timeInfo);
+    console.log(`   📅 Es de HOY: ${esDeHoy ? '✅ SÍ' : '❌ NO'} (${relativeTime || 'sin hora relativa'})`);
+    
+    if (!esDeHoy) return;
+    mensajesDeHoyCount++;
+    
+    // Verificar si es del agente o del cliente
+    const esDelCliente = message.querySelector('[data-contact-message="true"]') || 
+                        message.classList.contains('contact-message');
+    console.log(`   👤 Tipo: ${esDelCliente ? '🟢 CLIENTE' : '🔵 AGENTE'}`);
+    
+    if (esDelCliente) return;
+    mensajesDelAgenteCount++;
+    
+    // Buscar la frase
+    const paragraphs = message.querySelectorAll('p');
+    console.log(`   📝 Párrafos encontrados: ${paragraphs.length}`);
+    
+    paragraphs.forEach((p, pIndex) => {
+      const textoOriginal = p.textContent;
+      const textoNormalizado = textoOriginal
+        .toLowerCase()
+        .replace(/[áàäâ]/g, 'a')
+        .replace(/[éèëê]/g, 'e')
+        .replace(/[íìïî]/g, 'i')
+        .replace(/[óòöô]/g, 'o')
+        .replace(/[úùüû]/g, 'u')
+        .replace(/[.,!?¿¡]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      console.log(`\n   📄 Párrafo #${pIndex + 1}:`);
+      console.log(`      Original: "${textoOriginal.substring(0, 100)}${textoOriginal.length > 100 ? '...' : ''}"`);
+      console.log(`      Normalizado: "${textoNormalizado.substring(0, 100)}${textoNormalizado.length > 100 ? '...' : ''}"`);
+      
+      if (textoNormalizado.includes(fraseObjetivo)) {
+        console.log(`\n   🎯🎯🎯 ¡ENCONTRADO! 🎯🎯🎯`);
+        console.log(`   ✅ Este mensaje contiene la frase de carga`);
+        encontrado = true;
+      } else {
+        console.log(`      ❌ No contiene la frase buscada`);
+      }
+    });
+  });
+  
+  console.log('\n\n═══════════════════════════════════════════════════════');
+  console.log('📊 RESUMEN DEL TEST');
+  console.log('═══════════════════════════════════════════════════════');
+  console.log(`📨 Total mensajes analizados: ${allMessages.length}`);
+  console.log(`📅 Mensajes de HOY: ${mensajesDeHoyCount}`);
+  console.log(`🔵 Mensajes del AGENTE (hoy): ${mensajesDelAgenteCount}`);
+  console.log(`\n🎯 RESULTADO: ${encontrado ? '✅ MENSAJE DE CARGA DETECTADO' : '❌ NO SE DETECTÓ MENSAJE DE CARGA'}`);
+  console.log('═══════════════════════════════════════════════════════\n');
+  
+  if (!encontrado && mensajesDelAgenteCount > 0) {
+    console.log('💡 SUGERENCIA: Revisa si la frase en el mensaje es exactamente:');
+    console.log('   "Seguí los pasos a continuación para que tu ACR3DIT4CI0N se procese sin demoras"');
+  }
+  
+  return encontrado;
+};
+
+// Asegurar que la función se exponga globalmente
+setTimeout(() => {
+  if (typeof window.testDeteccionCarga === 'function') {
+    console.log('✅ Función de test cargada. Para probar la detección de carga, ejecuta:');
+    console.log('   testDeteccionCarga()');
+  }
+}, 1000);
