@@ -6,15 +6,15 @@
   "permissions": ["tabs", "scripting", "activeTab"],
   "host_permissions": ["https://new.clientify.com/*"],
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "codigo/popup.html",
     "default_icon": {
-      "16": "icon.png"
+      "16": "codigo/icon.png"
     }
   },
   "content_scripts": [
     {
       "matches": ["https://new.clientify.com/team-inbox/*"],
-      "js": ["chatOpener.js", "chatTagger.js", "elementos observer/url-mapper.js", "elementos observer/url-detector.js", "chatObserver.js", "content.js"]
+      "js": ["codigo/chatOpener.js", "codigo/chatTagger.js", "codigo/elementos observer/url-mapper.js", "codigo/elementos observer/url-detector.js", "codigo/chatObserver.js", "codigo/content.js"]
     }
   ]
 }

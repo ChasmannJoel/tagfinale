@@ -1,67 +1,103 @@
-# Tageador para Clientify
+# 🏷️ Tageador Automático para Clientify
 
-Extensión de Chrome para automatización de etiquetado y seguimiento de campañas en Clientify.
+Sistema de etiquetado automático de chats y seguimiento de campañas en Clientify.
 
-## Características
+---
 
-- 🔄 **Observación continua**: Monitoreo automático de chats cada 30 segundos
-- 🏷️ **Nomenclatura automática**: Generación de códigos DD-MM-ID[Letra][!]
-- 🔗 **Detección múltiple de URLs**: Identifica todas las URLs de Meta por chat
-- ✅ **Detección de cargas**: Marca automática cuando se confirma el pago
-- 📊 **Visualización por panel**: Datos organizados por panel y campaña
-- 📋 **Exportación**: Copia datos formateados al portapapeles
+## 📦 ¿Qué contiene esta carpeta?
 
-## Estructura del Proyecto
+- **ACTUALIZAR.bat** ← **¡DOBLE CLICK AQUÍ PARA ACTUALIZAR!** 🔄
+- **manifest.json** ← Archivo de configuración (no tocar)
+- **codigo/** ← Carpeta con el código del sistema (no tocar)
 
-```
-tageador-master/
-├── manifest.json              # Configuración de la extensión
-├── popup.html/popup.js        # Interfaz del popup
-├── content.js                 # Panel de visualización de datos
-├── chatObserver.js            # Observer principal con loop continuo
-├── chatTagger.js              # Módulo de etiquetado automático
-├── paneles-config.json        # Mapeo ID→Nombre de paneles
-└── elementos observer/
-    ├── message-detector.js    # Detector de mensajes
-    ├── panel-detector.js      # Detector de paneles
-    ├── url-detector.js        # Extractor de URLs y nomenclaturas
-    └── url-mapper.js          # Mapeo URL→Letra de campaña
+---
+
+## 🚀 INSTALACIÓN (SOLO LA PRIMERA VEZ)
+
+### 1️⃣ Instalar Git (si no lo tienes)
+- Descargar de: https://git-scm.com/download/win
+- Instalar con las opciones por defecto
+
+### 2️⃣ Clonar el proyecto (solo la primera vez)
+```bash
+git clone https://github.com/ChasmannJoel/tagfinale.git
 ```
 
-## Instalación
-
-1. Descargar el proyecto
-2. Abrir Chrome → `chrome://extensions/`
-3. Activar "Modo de desarrollador"
+### 3️⃣ Instalar la extensión en Chrome
+1. Abre Chrome
+2. Escribe en la barra: `chrome://extensions/`
+3. Activa "Modo de desarrollador" (arriba a la derecha)
 4. Click en "Cargar extensión sin empaquetar"
-5. Seleccionar la carpeta del proyecto
+5. Selecciona la carpeta completa del proyecto
 
-## Uso
+---
 
-1. **Iniciar Observación**: Click en el botón del popup
-2. **Asignar letras**: Cuando aparezca el modal, asignar A, B, C a cada URL
-3. **Ver Datos**: Abre el panel lateral con estadísticas
-4. **Copiar**: Exporta el reporte al portapapeles
+## 🔄 ACTUALIZAR (CADA VEZ QUE HAYA CAMBIOS)
 
-## Formato de Nomenclatura
+### ¡MUY FÁCIL!
 
-`DD-MM-ID[Letra][!]`
+1. **Doble click en `ACTUALIZAR.bat`**
+2. Espera a que termine (verás un mensaje verde ✅)
+3. Ve a Chrome → `chrome://extensions/`
+4. Click en el botón de recargar (🔄) de la extensión
 
-- **DD-MM**: Día y mes
-- **ID**: Número de panel
-- **Letra**: A, B, C (campaña)
-- **!**: Indica que se detectó mensaje de carga
+**¡Y LISTO!** Ya tienes la última versión 🎉
 
-Ejemplo: `13-12-19A!` = Panel 19, Campaña A, con carga confirmada, del 13 de diciembre
+---
 
-## Tecnologías
+## 💡 CÓMO USAR LA EXTENSIÓN
 
-- JavaScript ES6+
-- Chrome Extension Manifest V3
-- LocalStorage para persistencia
-- DOM Manipulation
-- Audio API para alertas
+### Paso 1: Iniciar
+- Click en el ícono de la extensión en Chrome
+- Click en **"Iniciar Observación"**
 
-## Licencia
+### Paso 2: Asignar letras a las URLs
+- Cuando aparezca una ventana emergente
+- Verás una URL de Facebook/Instagram
+- Escribe la letra de campaña: **A**, **B**, o **C**
+- Click en "Guardar"
 
-MIT
+### Paso 3: Ver estadísticas
+- Click en **"Ver Datos"** en el popup
+- Se abrirá un panel lateral con toda la información
+- Puedes copiar los datos al portapapeles
+
+---
+
+## 📊 ¿Qué hace automáticamente?
+
+✅ Detecta todos los mensajes con URLs de Meta  
+✅ Genera códigos automáticos (Ej: `13-12-19A`)  
+✅ Detecta si el cliente confirmó el pago (añade ❗)  
+✅ Agrupa todo por panel y campaña  
+✅ Cuenta los mensajes automáticamente  
+
+---
+
+## ❓ PREGUNTAS FRECUENTES
+
+**P: ¿Qué hago si me sale error al actualizar?**  
+R: Verifica tu conexión a internet y que Git esté instalado
+
+**P: ¿Tengo que actualizar todos los días?**  
+R: Solo cuando te avisen que hay una nueva versión
+
+**P: ¿Puedo borrar algo de la carpeta "codigo"?**  
+R: ¡NO! Todo lo que está ahí es necesario
+
+**P: ¿La extensión funciona sin internet?**  
+R: Sí, pero necesitas internet para actualizarla
+
+---
+
+## 🆘 SOPORTE
+
+Si algo no funciona, contacta al equipo técnico con:
+- Captura de pantalla del error
+- Qué estabas haciendo cuando falló
+- La fecha y hora aproximada
+
+---
+
+**Versión:** 1.0  
+**Última actualización:** Diciembre 2025

@@ -18,3 +18,6 @@ Thumbs.db
 # Chrome Extension packaging
 *.pem
 *.crx
+
+# Git
+.git/
