@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Clientify Auto Tagger",
+  "name": "Observador AutoTag",
   "version": "1.0",
-  "description": "Agrega o edita etiquetas automáticamente en las observaciones de Clientify.",
+  "description": "Observa y etiqueta chats automáticamente en Clientify con nomenclatura inteligente.",
   "permissions": ["tabs", "scripting", "activeTab"],
   "host_permissions": ["https://new.clientify.com/*"],
   "action": {
