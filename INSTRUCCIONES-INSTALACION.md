@@ -2,49 +2,118 @@
 
 ## ⚠️ IMPORTANTE ANTES DE COMENZAR
 
-**REQUISITO:** Tener Google Chrome instalado en tu PC.
+**REQUISITOS:** 
+- ✅ Tener Google Chrome instalado en tu PC
+- ✅ Instalar Git (te explico cómo más abajo)
 
 ---
 
-## 🔽 PASO 1: DESCARGAR EL PROYECTO
+## 🔧 PASO 0: INSTALAR GIT (OBLIGATORIO)
 
-1. **Abrí este link:** https://github.com/ChasmannJoel/tagfinale
+### ¿Qué es Git?
+Es un programa que permite descargar y actualizar el proyecto automáticamente.
 
-2. **Hacé click en el botón verde** que dice **"< > Code"** (arriba a la derecha)
+### Instalación de Git:
 
-3. **Seleccioná:** "Download ZIP"
+1. **Descargá Git desde:** https://git-scm.com/download/win
 
-4. **Guardá el archivo** donde quieras (te recomiendo Descargas)
+2. **Ejecutá el archivo descargado** (Git-2.XX.X-64-bit.exe)
+
+3. **Se abre el instalador. Seguí estos pasos:**
+
+#### Pantalla 1: Licencia
+   - Click en **"Next"** (Siguiente)
+
+#### Pantalla 2: Select Destination Location
+   - Dejá la ruta por defecto
+   - Click en **"Next"**
+
+#### Pantalla 3: Select Components
+   - **Dejá TODO como está** (con los ✅ que vienen por defecto)
+   - Click en **"Next"**
+
+#### Pantalla 4: Select Start Menu Folder
+   - Dejá "Git" como está
+   - Click en **"Next"**
+
+#### Pantalla 5: Choosing the default editor
+   - **MUY IMPORTANTE:** Seleccioná **"Use Notepad as Git's default editor"** (es más simple)
+   - Click en **"Next"**
+
+#### Pantalla 6: Adjusting the name of the initial branch
+   - Dejá la opción por defecto seleccionada
+   - Click en **"Next"**
+
+#### Pantalla 7: Adjusting your PATH environment
+   - **Dejá seleccionado:** "Git from the command line and also from 3rd-party software"
+   - Click en **"Next"**
+
+#### Pantalla 8: Choosing HTTPS transport backend
+   - Dejá "Use the OpenSSL library" seleccionado
+   - Click en **"Next"**
+
+#### Pantalla 9: Configuring the line ending conversions
+   - Dejá "Checkout Windows-style, commit Unix-style line endings"
+   - Click en **"Next"**
+
+#### Pantalla 10: Configuring the terminal emulator
+   - Dejá "Use MinTTY (the default terminal of MSYS2)"
+   - Click en **"Next"**
+
+#### Pantalla 11: Choose the default behavior of 'git pull'
+   - Dejá la primera opción seleccionada
+   - Click en **"Next"**
+
+#### Pantalla 12: Choose a credential helper
+   - Dejá "Git Credential Manager" seleccionado
+   - Click en **"Next"**
+
+#### Pantalla 13: Configuring extra options
+   - Dejá las opciones por defecto
+   - Click en **"Next"**
+
+#### Pantalla 14: Configuring experimental options
+   - **NO marques nada** (dejá todo sin ✅)
+   - Click en **"Install"**
+
+4. **Esperá a que termine la instalación** (puede tardar 1-2 minutos)
+
+5. **Click en "Finish"**
+
+6. **¡Git ya está instalado!** 🎉
 
 ---
 
-## 📂 PASO 2: EXTRAER LA CARPETA
+## 🔽 PASO 1: DESCARGAR EL PROYECTO CON GIT
 
-1. **Buscá el archivo** `tagfinale-main.zip` que descargaste
+1. **Hacé click derecho en el Escritorio**
 
-2. **Click derecho sobre el archivo** → **"Extraer aquí"** o **"Extraer todo"**
+2. **Seleccioná:** "Git Bash Here" (si no aparece, buscá "Git Bash" en el menú inicio)
 
-3. **Se va a crear una carpeta** llamada `tagfinale-main`
+3. **Se abre una ventana negra** (es normal, es la consola de Git)
 
-4. **⚠️ MUY IMPORTANTE:** 
-   - **Abrí esa carpeta**
-   - **Dentro hay OTRA carpeta también llamada `tagfinale-main` o similar**
-   - **NO uses la carpeta de afuera, tenés que usar la de ADENTRO**
-   - **Verificá que adentro veas los archivos:**
-     - `manifest.json`
-     - `ACTUALIZAR.bat`
-     - `LEEME.txt`
-     - carpeta `codigo`
+4. **Copiá y pegá este comando** (Ctrl+C para copiar, click derecho en la ventana para pegar):
+   ```
+   git clone https://github.com/ChasmannJoel/tagfinale.git
+   ```
 
-5. **Copiá o mové esta carpeta** (la que tiene los archivos) **al Escritorio**
+5. **Presioná Enter**
 
-6. **Renombrá la carpeta** a algo simple, por ejemplo: `observador-clientify`
+6. **Esperá a que termine** (vas a ver mensajes descargando archivos)
+
+7. **Cuando termine** verás un mensaje como "done" o "hecho"
+
+8. **Cerrá la ventana negra**
+
+9. **En tu Escritorio** ahora hay una carpeta llamada **"tagfinale"**
+
+10. **⚠️ IMPORTANTE:** Podés renombrarla si querés (por ejemplo: `observador-clientify`), pero recordá el nombre que le pusiste
 
 ---
 
-## 🎯 PASO 3: CARGAR LA EXTENSIÓN EN CHROME
+## 🎯 PASO 2: CARGAR LA EXTENSIÓN EN CHROME
 
-### 3.1 - Abrir Chrome y configuración de extensiones
+### 2.1 - Abrir Chrome y configuración de extensiones
 
 1. **Abrí Google Chrome**
 
@@ -58,16 +127,16 @@
    - Arriba a la derecha verás un interruptor que dice **"Modo de desarrollador"**
    - **Hacé click** para activarlo (debe quedar en azul/verde)
 
-### 3.2 - Cargar la extensión
+### 2.2 - Cargar la extensión
 
 4. **Hacé click en** el botón **"Cargar extensión sin empaquetar"** (aparece arriba a la izquierda)
 
-5. **Buscá la carpeta** `observador-clientify` que pusiste en el Escritorio
+5. **Buscá la carpeta** `tagfinale` (o el nombre que le pusiste) en el Escritorio
 
 6. **⚠️ MUY IMPORTANTE:** 
    - **Seleccioná la carpeta completa** (no entres adentro de ella)
-   - **Debe ser la carpeta que tiene el archivo `manifest.json` directamente adentro**
-   - Si ves dos carpetas con el mismo nombre, usá la que tiene los archivos
+   - **Debe ser la carpeta que descargaste con Git**
+   - **Verificá que adentro tenga:** `manifest.json`, `ACTUALIZAR.bat`, carpeta `codigo`
 
 7. **Hacé click en "Seleccionar carpeta"**
 
@@ -109,19 +178,31 @@ Deberías ver una tarjeta con:
 
 ## 🔄 ACTUALIZAR LA EXTENSIÓN (cuando haya cambios)
 
-1. **Abrí la carpeta** del proyecto en el Escritorio
+### ✅ SÚPER FÁCIL con el botón ACTUALIZAR.bat:
+
+1. **Abrí la carpeta** del proyecto en el Escritorio (la que descargaste con Git)
 
 2. **Doble click en:** `ACTUALIZAR.bat`
 
-3. **Esperá a que termine** (vas a ver un mensaje verde)
+3. **Se abre una ventana negra** que descarga automáticamente las actualizaciones
 
-4. **Abrí Chrome** → `chrome://extensions/`
+4. **Esperá a que termine** (vas a ver un mensaje verde ✅ que dice "ACTUALIZACIÓN COMPLETADA")
 
-5. **Buscá "Observador AutoTag"**
+5. **Presioná cualquier tecla** para cerrar la ventana
 
-6. **Hacé click en el botón de recargar** (🔄) 
+6. **Abrí Chrome** → `chrome://extensions/`
 
-7. **¡Listo!** Ya tenés la última versión
+7. **Buscá "Observador AutoTag"**
+
+8. **Hacé click en el botón de recargar** (🔄) 
+
+9. **¡Listo!** Ya tenés la última versión 🎉
+
+### ⚠️ Si sale error al actualizar:
+
+- Verificá que tenés internet
+- Asegúrate de haber descargado la carpeta con Git (no con ZIP)
+- Si descargaste el ZIP, tenés que descargar el ZIP nuevamente cuando haya cambios
 
 ---
 
@@ -130,7 +211,17 @@ Deberías ver una tarjeta con:
 ### "Error: manifest.json not found"
 - ✅ Verificá que estés seleccionando la carpeta correcta
 - ✅ Debe ser la carpeta que tiene `manifest.json` directamente adentro
-- ✅ NO uses la carpeta que contiene otra carpeta con el mismo nombre
+- ✅ La carpeta se llama `tagfinale` (o el nombre que le hayas puesto)
+
+### "No aparece Git Bash Here cuando hago click derecho"
+- ✅ Reiniciá la PC después de instalar Git
+- ✅ O buscá "Git Bash" en el menú inicio y ejecutalo desde ahí
+- ✅ Luego usá el comando `cd Desktop` para ir al escritorio
+
+### "Error: not a git repository" al usar ACTUALIZAR.bat
+- ✅ Esto significa que descargaste el ZIP en vez de usar Git
+- ✅ Tenés que descargar el proyecto de nuevo con `git clone`
+- ✅ O descargar el ZIP nuevamente cuando haya actualizaciones
 
 ### "No puedo ver el ícono de la extensión"
 - ✅ Hacé click en el ícono de extensiones (🧩) en Chrome
@@ -141,6 +232,10 @@ Deberías ver una tarjeta con:
 - ✅ Verificá que esté activada (interruptor en verde/azul)
 - ✅ Recargá la página de Clientify (F5)
 - ✅ Intentá recargar la extensión (🔄 en chrome://extensions/)
+
+### "Git me pide usuario y contraseña"
+- ✅ NO debería pedirte nada para descargar (solo para subir cambios)
+- ✅ Si te pide, verificá que copiaste bien el comando `git clone`
 
 ---
 
