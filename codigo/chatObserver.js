@@ -1,3 +1,15 @@
+// Helper para enviar eventos al popup
+function sendPopupEvent(event, type = 'info', data = {}) {
+  chrome.runtime.sendMessage({
+    action: 'popupEvent',
+    event,
+    type,
+    data
+  }).catch(err => {
+    // Ignore si el popup no está abierto
+  });
+}
+
 // --- Módulo para observar chats ---
 const chatObserver = {
   stopProcess: false,
@@ -62,9 +74,15 @@ const chatObserver = {
             const nomenclaturasStr = nomenclaturas.map(n => n.nomenclatura).join(', ');
             console.log(`📋 [Observer] Nomenclaturas generadas: ${nomenclaturasStr}`);
             
+            // Notificar panel detectado
+            if (urlInfo.panelOriginal) {
+              sendPopupEvent('panelDetected', 'info', { panel: urlInfo.panelOriginal });
+            }
+            
             // Si la URL necesita letra de campaña y NO la tiene, PAUSAR
             if (urlFinal !== 'Sin URL' && !urlInfo.letraCampana) {
               console.log('⏸️ PAUSANDO observer - Esperando letra de campaña para:', urlFinal);
+              sendPopupEvent('urlWaiting', 'warning', { url: urlFinal });
               self.pausado = true;
               
               // Guardar callback para reanudar después y CONTINUAR CON EL TAGEO
@@ -97,6 +115,7 @@ const chatObserver = {
             
             // ========== AHORA TAGEAR EN OBSERVACIONES ==========
             self.tagearMultiplesEnObservaciones(nomenclaturas, index, () => {
+              sendPopupEvent('chatProcessed', 'success', { panel: urlInfo.panelOriginal || 'sin panel' });
               index++;
               setTimeout(clickNextChat, 2000);
             });
@@ -233,11 +252,13 @@ const chatObserver = {
     console.log('🔍 Iniciando observación CONTINUA y TAGEO automático de chats de HOY...');
     console.log('♻️ El observer buscará y tageará nuevos chats cada 30 segundos automáticamente');
     this.stopProcess = false;
+    sendPopupEvent('observerStarted', 'success');
     this.scrollAndObserveChats();
   },
   
   stopObserveIteration() {
     this.stopProcess = true;
+    sendPopupEvent('observerStopped', 'warning');
     if (this.scrollTimeoutId) {
       clearTimeout(this.scrollTimeoutId);
       this.scrollTimeoutId = null;

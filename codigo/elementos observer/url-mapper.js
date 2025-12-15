@@ -6,6 +6,18 @@
 // URL del VPS de Hostinger con sincronización centralizada de mapeos
 const MAPEOS_SERVER_URL = 'https://accountant-services.co.uk';
 
+// Helper para enviar eventos al popup
+function sendPopupEvent(event, type = 'info', data = {}) {
+  chrome.runtime.sendMessage({
+    action: 'popupEvent',
+    event,
+    type,
+    data
+  }).catch(err => {
+    // Ignore si el popup no está abierto
+  });
+}
+
 const urlMapper = {
   cola: [],
   procesando: false,
@@ -760,6 +772,9 @@ const urlMapper = {
       
       // 2. Enviar al servidor de forma ASÍNCRONA (no bloquea)
       this.sincronizarAlServidor(url, letra, panel);
+      
+      // 3. Notificar al popup
+      sendPopupEvent('urlMapped', 'success', { url: url.substring(0, 40) + '...', letra });
       
       console.log(`✅ Mapeado: ${url} → ${letra} (sincronizando con servidor)`);
     } catch (error) {
