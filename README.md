@@ -49,18 +49,30 @@ git clone https://github.com/ChasmannJoel/tagfinale.git
 
 ### Paso 1: Iniciar
 - Click en el ícono de la extensión en Chrome
-- Click en **"Iniciar Observación"**
+- Click en **"▶️ Iniciar"**
 
-### Paso 2: Asignar letras a las URLs
-- Cuando aparezca una ventana emergente
-- Verás una URL de Facebook/Instagram
+### Paso 2: Ver el progreso en tiempo real
+El panel muestra en vivo:
+- 🟢 **Estado**: Si el observer está activo o inactivo
+- 📋 **Log de eventos**: Últimas acciones del sistema
+- 📊 **Estadísticas**:
+  - Chats procesados
+  - Mapeos guardados al servidor
+  - URLs esperando letra de campaña
+  - Errores detectados
+
+### Paso 3: Asignar letras a las URLs (si es necesario)
+- Si una URL es nueva, aparecerá una ventana emergente
+- Verás la URL de Facebook/Instagram
 - Escribe la letra de campaña: **A**, **B**, o **C**
 - Click en "Guardar"
+- El observer automáticamente reanuda el procesamiento
 
-### Paso 3: Ver estadísticas
-- Click en **"Ver Datos"** en el popup
-- Se abrirá un panel lateral con toda la información
-- Puedes copiar los datos al portapapeles
+### Paso 4: Detener
+- Click en **"⏹️ Detener"** cuando termines
+
+### Paso 5: Ver estadísticas
+- Click en **"Ver Datos"** en el popup (el panel ya muestra todo en tiempo real)
 
 ---
 
@@ -69,8 +81,31 @@ git clone https://github.com/ChasmannJoel/tagfinale.git
 ✅ Detecta todos los mensajes con URLs de Meta  
 ✅ Genera códigos automáticos (Ej: `13-12-19A`)  
 ✅ Detecta si el cliente confirmó el pago (añade ❗)  
-✅ Agrupa todo por panel y campaña  
-✅ Cuenta los mensajes automáticamente  
+✅ Carga automáticamente letras previamente mapeadas  
+✅ Sincroniza todo al servidor centralizado  
+✅ Muestra progreso en tiempo real en el panel  
+
+---
+
+## 🎯 Panel de Control en Tiempo Real
+
+### Indicador de Estado
+- **🟢 Verde pulsante**: Observer en ejecución
+- **⚫ Gris**: Inactivo (esperando inicio)
+- **🔴 Rojo pulsante**: Error detectado
+
+### Eventos
+Cada acción importante se registra en el log con:
+- ⏰ Hora exacta
+- 📌 Descripción de la acción
+- 🎨 Color según tipo (éxito, error, advertencia, información)
+
+### Estadísticas Actualizadas
+Se actualizan en tiempo real según:
+- Chats procesados
+- URLs mapeadas al servidor
+- URLs en espera de letra
+- Total de errores
 
 ---
 
@@ -79,6 +114,12 @@ git clone https://github.com/ChasmannJoel/tagfinale.git
 **P: ¿Qué hago si me sale error al actualizar?**  
 R: Verifica tu conexión a internet y que Git esté instalado
 
+**P: ¿El panel muestra en tiempo real?**  
+R: Sí, se actualiza automáticamente conforme el observer procesa chats
+
+**P: ¿Qué pasa si cierro el popup?**  
+R: El observer sigue funcionando en Clientify. El popup solo es para monitoreo
+
 **P: ¿Tengo que actualizar todos los días?**  
 R: Solo cuando te avisen que hay una nueva versión
 
@@ -86,18 +127,19 @@ R: Solo cuando te avisen que hay una nueva versión
 R: ¡NO! Todo lo que está ahí es necesario
 
 **P: ¿La extensión funciona sin internet?**  
-R: Sí, pero necesitas internet para actualizarla
+R: Funciona pero sin sincronizar datos al servidor. Necesitas internet para mapeos centralizados
 
 ---
 
 ## 🆘 SOPORTE
 
 Si algo no funciona, contacta al equipo técnico con:
-- Captura de pantalla del error
+- Captura de pantalla del log de eventos (o del error)
 - Qué estabas haciendo cuando falló
 - La fecha y hora aproximada
 
 ---
 
-**Versión:** 1.0  
-**Última actualización:** Diciembre 2025
+**Versión:** 2.0  
+**Última actualización:** Diciembre 2025  
+**Cambios**: Nuevo panel visual con log en tiempo real, eliminado botón "Ver Datos"
