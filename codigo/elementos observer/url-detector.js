@@ -79,7 +79,7 @@ const urlDetector = {
   },
   
   /**
-   * Busca un panel por nombre consultando SIEMPRE la API
+   * Busca un panel por nombre consultando SIEMPRE la API primero
    * @param {string} nombreNormalizado - Nombre del panel normalizado
    * @returns {Promise<Object|null>} {id, nombre} o null si no se encuentra
    */
@@ -88,18 +88,18 @@ const urlDetector = {
     console.log(`🔍 Buscando panel "${nombreNormalizado}"...`);
     const panelesAPI = await this.cargarPanelesDesdeAPI();
     
-    // 2. Buscar en los paneles de la API
+    // 2. Buscar en los paneles de la API (PRIMERO)
     for (const panel of panelesAPI) {
       for (const nombre of panel.nombres) {
         if (nombreNormalizado.toLowerCase().includes(nombre.toLowerCase()) ||
             nombre.toLowerCase().includes(nombreNormalizado.toLowerCase())) {
-          console.log(`✅ Panel encontrado: ${nombre} (ID: ${panel.id})`);
+          console.log(`✅ Panel encontrado en API: ${nombre} (ID: ${panel.id})`);
           return { id: panel.id, nombre: nombre };
         }
       }
     }
     
-    // 3. Si no está en API, buscar en configuración local como fallback
+    // 3. Si no está en API, buscar en configuración local como FALLBACK
     console.log(`⚠️ Panel no encontrado en API, buscando en configuración local...`);
     for (const panel of PANELES_CONFIG) {
       for (const nombre of panel.nombres) {
