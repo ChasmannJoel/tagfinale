@@ -3,8 +3,8 @@
 // ============================================
 
 // 🔗 URL del servidor de mapeos centralizado
-// Reemplaza con tu URL de Hostinger: http://tu-dominio.com:3067 o http://IP:3067
-const MAPEOS_SERVER_URL = 'http://148.230.72.182:3067';
+// URL del VPS de Hostinger con sincronización centralizada de mapeos
+const MAPEOS_SERVER_URL = 'http://168.231.70.228:3067';
 
 const urlMapper = {
   cola: [],
