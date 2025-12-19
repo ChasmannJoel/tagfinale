@@ -48,7 +48,7 @@ const chatObserver = {
             console.log("🔄 Reiniciando búsqueda de chats nuevos...");
             self.scrollAndObserveChats();
           }
-        }, 15000); // 15 segundos
+        }, 8000); // 8 segundos
         return;
       }
       
@@ -73,7 +73,7 @@ const chatObserver = {
               console.log(`⏭️ [Observer] Chat ${index + 1} saltado (no es de hoy o sin nomenclatura)`);
               sendPopupEvent('chatSkipped', 'info', { reason: 'no nomenclatura' });
               index++;
-              setTimeout(clickNextChat, 1000);
+              setTimeout(clickNextChat, 800);
               return;
             }
             
@@ -109,13 +109,13 @@ const chatObserver = {
                   // Continuar con el tageo usando TODAS las nomenclaturas
                   self.tagearMultiplesEnObservaciones(nomenclaturasActualizadas, index, () => {
                     index++;
-                    setTimeout(clickNextChat, 1000);
+                    setTimeout(clickNextChat, 800);
                   });
                 } else {
                   // Si aún no tiene letra, saltar este chat
                   console.warn('⚠️ No se pudo obtener letra de campaña, saltando...');
                   index++;
-                  setTimeout(clickNextChat, 1000);
+                  setTimeout(clickNextChat, 800);
                 }
               };
               
@@ -127,13 +127,13 @@ const chatObserver = {
             self.tagearMultiplesEnObservaciones(nomenclaturas, index, () => {
               sendPopupEvent('chatProcessed', 'success', { panel: urlInfo.panelOriginal || 'sin panel' });
               index++;
-              setTimeout(clickNextChat, 1000);
+              setTimeout(clickNextChat, 800);
             });
-          }, 2000);
-        }, 600);
+          }, 1200);
+        }, 200);
       } else {
         index++;
-        setTimeout(clickNextChat, 1000);
+        setTimeout(clickNextChat, 800);
       }
     }
     
@@ -240,7 +240,7 @@ const chatObserver = {
                 console.log(`✅ [Observer] Chat ${chatIndex + 1} ya tiene todas las nomenclaturas correctas`);
                 const cancelBtn = document.querySelector('button[aria-label="Cancelar"]');
                 if (cancelBtn) cancelBtn.click();
-                setTimeout(onComplete, 1000);
+                setTimeout(onComplete, 600);
               } else {
                 // Guardar cambios
                 const nuevoValor = codigos.join(', ');
@@ -252,31 +252,31 @@ const chatObserver = {
                   if (saveBtn) {
                     saveBtn.click();
                     console.log(`✅ [Observer] Chat ${chatIndex + 1} tageado correctamente`);
-                    setTimeout(onComplete, 1500);
+                    setTimeout(onComplete, 1000);
                   } else {
                     console.warn('[Observer] No se encontró el botón Guardar');
-                    setTimeout(onComplete, 1000);
+                    setTimeout(onComplete, 600);
                   }
-                }, 500);
+                }, 600);
               }
             } else if (intentos < maxIntentos) {
               intentos++;
-              setTimeout(buscarTextareaYTaggear, 500);
+              setTimeout(buscarTextareaYTaggear, 400);
             } else {
               console.warn('[Observer] No se encontró el textarea tras varios intentos');
-              setTimeout(onComplete, 1000);
+              setTimeout(onComplete, 600);
             }
           }
           
-          setTimeout(buscarTextareaYTaggear, 2000);
+          setTimeout(buscarTextareaYTaggear, 1200);
         } else {
           console.warn('[Observer] No se encontró el botón de edición');
-          setTimeout(onComplete, 1000);
+          setTimeout(onComplete, 600);
         }
-      }, 300);
+      }, 200);
     } else {
       console.warn('[Observer] No se encontró el <p> Observaciones');
-      setTimeout(onComplete, 1000);
+      setTimeout(onComplete, 600);
     }
   },
   
