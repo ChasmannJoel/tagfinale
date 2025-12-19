@@ -24,6 +24,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   if (message.action === "observarChats") {
     console.log("▶️ [AutoTag] Iniciando observación de chats...");
+    const ocultados = ocultarCyberBoti();
+    console.log(`🚫 [AutoTag] ${ocultados} mensajes de Cyber BOTI ocultados`);
     chatObserver.startObserveIteration();
   }
 });

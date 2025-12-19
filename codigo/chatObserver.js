@@ -18,7 +18,15 @@ const chatObserver = {
   callbackReanudar: null,
   
   scrollAndObserveChats() {
-    chatOpener.scrollChatsUntilStopOrEnd(this.iterateObserveChats.bind(this));
+    // En lugar de hacer scroll, obtener directamente los primeros 20 chats visibles
+    const chatDivs = chatOpener.getFirst20ChatsWithoutScroll();
+    console.log(`🚀 [Observer] Iniciando observación de ${chatDivs.length} chats sin scroll`);
+    if (chatDivs.length === 0) {
+      console.warn("⚠️ No se encontraron chats con emoji 🕐.");
+      sendPopupEvent('noChatFound', 'warning', { reason: 'no chats found' });
+      return;
+    }
+    this.iterateObserveChats(chatDivs);
   },
   
   iterateObserveChats(chatDivs) {
@@ -40,7 +48,7 @@ const chatObserver = {
             console.log("🔄 Reiniciando búsqueda de chats nuevos...");
             self.scrollAndObserveChats();
           }
-        }, 30000); // 30 segundos
+        }, 15000); // 15 segundos
         return;
       }
       
@@ -65,7 +73,7 @@ const chatObserver = {
               console.log(`⏭️ [Observer] Chat ${index + 1} saltado (no es de hoy o sin nomenclatura)`);
               sendPopupEvent('chatSkipped', 'info', { reason: 'no nomenclatura' });
               index++;
-              setTimeout(clickNextChat, 2000);
+              setTimeout(clickNextChat, 1000);
               return;
             }
             
@@ -101,13 +109,13 @@ const chatObserver = {
                   // Continuar con el tageo usando TODAS las nomenclaturas
                   self.tagearMultiplesEnObservaciones(nomenclaturasActualizadas, index, () => {
                     index++;
-                    setTimeout(clickNextChat, 2000);
+                    setTimeout(clickNextChat, 1000);
                   });
                 } else {
                   // Si aún no tiene letra, saltar este chat
                   console.warn('⚠️ No se pudo obtener letra de campaña, saltando...');
                   index++;
-                  setTimeout(clickNextChat, 2000);
+                  setTimeout(clickNextChat, 1000);
                 }
               };
               
@@ -119,13 +127,13 @@ const chatObserver = {
             self.tagearMultiplesEnObservaciones(nomenclaturas, index, () => {
               sendPopupEvent('chatProcessed', 'success', { panel: urlInfo.panelOriginal || 'sin panel' });
               index++;
-              setTimeout(clickNextChat, 2000);
+              setTimeout(clickNextChat, 1000);
             });
-          }, 4000);
-        }, 1200);
+          }, 2000);
+        }, 600);
       } else {
         index++;
-        setTimeout(clickNextChat, 2000);
+        setTimeout(clickNextChat, 1000);
       }
     }
     
@@ -232,7 +240,7 @@ const chatObserver = {
                 console.log(`✅ [Observer] Chat ${chatIndex + 1} ya tiene todas las nomenclaturas correctas`);
                 const cancelBtn = document.querySelector('button[aria-label="Cancelar"]');
                 if (cancelBtn) cancelBtn.click();
-                setTimeout(onComplete, 2000);
+                setTimeout(onComplete, 1000);
               } else {
                 // Guardar cambios
                 const nuevoValor = codigos.join(', ');
@@ -244,31 +252,31 @@ const chatObserver = {
                   if (saveBtn) {
                     saveBtn.click();
                     console.log(`✅ [Observer] Chat ${chatIndex + 1} tageado correctamente`);
-                    setTimeout(onComplete, 3000);
+                    setTimeout(onComplete, 1500);
                   } else {
                     console.warn('[Observer] No se encontró el botón Guardar');
-                    setTimeout(onComplete, 2000);
+                    setTimeout(onComplete, 1000);
                   }
-                }, 1000);
+                }, 500);
               }
             } else if (intentos < maxIntentos) {
               intentos++;
-              setTimeout(buscarTextareaYTaggear, 1000);
+              setTimeout(buscarTextareaYTaggear, 500);
             } else {
               console.warn('[Observer] No se encontró el textarea tras varios intentos');
-              setTimeout(onComplete, 2000);
+              setTimeout(onComplete, 1000);
             }
           }
           
-          setTimeout(buscarTextareaYTaggear, 4000);
+          setTimeout(buscarTextareaYTaggear, 2000);
         } else {
           console.warn('[Observer] No se encontró el botón de edición');
-          setTimeout(onComplete, 2000);
+          setTimeout(onComplete, 1000);
         }
-      }, 600);
+      }, 300);
     } else {
       console.warn('[Observer] No se encontró el <p> Observaciones');
-      setTimeout(onComplete, 2000);
+      setTimeout(onComplete, 1000);
     }
   },
   

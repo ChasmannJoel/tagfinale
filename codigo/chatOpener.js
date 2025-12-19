@@ -7,7 +7,21 @@ const chatOpener = {
   getChatElements() {
     return Array.from(document.querySelectorAll('p'))
       .filter(p => p.textContent.includes('🕐'))
-      .map(p => p.closest('div'));
+      .map(p => p.closest('div'))
+      .filter(div => !div.closest('[data-skip-cyberboti="true"]')); // Excluir chats marcados como Cyber BOTI
+  },
+  
+  /**
+   * Obtiene los primeros 20 chats SIN hacer scroll
+   * Solo busca los divs visibles que tengan emoji 🕐
+   * @returns {Array} Array de divs de chat (máximo 20)
+   */
+  getFirst20ChatsWithoutScroll() {
+    const allChats = this.getChatElements();
+    console.log(`🔍 [getFirst20Chats] Encontrados ${allChats.length} chats visibles`);
+    const chatsLimitados = allChats.slice(0, 20);
+    console.log(`✅ [getFirst20Chats] Procesando primeros ${chatsLimitados.length} chats (sin scroll)`);
+    return chatsLimitados;
   },
   
   scrollChatsContainerToEnd() {
