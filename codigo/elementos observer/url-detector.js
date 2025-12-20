@@ -379,7 +379,8 @@ const urlDetector = {
               calculatedTime: this.calculateExactTime(relativeTime)
             };
             
-            // Verificar si este mensaje es de HOY
+            // Procesar TODOS los mensajes con URLs Meta, independientemente de su fecha
+            // Esto preserva el timestamp original y evita reprocessar con fecha actual
             if (this.esMensajeDeHoy(timeInfo)) {
               urlsDeHoy.push({
                 url: href,
@@ -481,7 +482,9 @@ const urlDetector = {
   },
   
   /**
-   * Verifica si el mensaje es de hoy (00:00 a 23:59 hora Argentina)
+   * Verifica si el mensaje tiene timestamp válido
+   * Se procesarán TODOS los mensajes con URLs Meta, preservando su timestamp original
+   * NO es un filtro de "solo de hoy" para evitar reprocesar mensajes antiguos con fecha actual
    * @param {Object} timeInfo - Información de tiempo del mensaje
    * @returns {boolean}
    */
@@ -490,23 +493,18 @@ const urlDetector = {
     
     const timestamp = timeInfo.fullTimestamp;
     
-    // Si dice "Hace X minutos/horas" es de hoy
+    // Si dice "Hace X minutos/horas" es válido
     if (timestamp.includes('minuto') || timestamp.includes('hora')) {
       return true;
     }
     
-    // Si tiene fecha específica, verificar que sea hoy
-    const fechaHoyArg = new Date().toLocaleDateString('es-AR', { 
-      timeZone: 'America/Argentina/Buenos_Aires',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-    
+    // Si tiene fecha específica (cualquier fecha), es válido
+    // NOTA: Antes filtraba solo mensajes del día actual, causando que URLs de días
+    // anteriores se reprocessaran con la fecha de "hoy" cuando se volvía a abrir el chat
     const fechaMatch = timestamp.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
     if (fechaMatch) {
-      const fechaMensaje = `${fechaMatch[1].padStart(2, '0')}/${fechaMatch[2].padStart(2, '0')}/${fechaMatch[3]}`;
-      return fechaMensaje === fechaHoyArg;
+      // Aceptar cualquier fecha válida, preservar el timestamp original
+      return true;
     }
     
     return false;
