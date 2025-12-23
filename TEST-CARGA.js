@@ -8,10 +8,15 @@
   console.log('🧪 TEST DE DETECCIÓN DE MENSAJE DE CARGA');
   console.log('═══════════════════════════════════════════════════════\n');
   
-  const fraseObjetivo = 'segui los pasos a continuacion para que tu acr3dit4ci0n se procese sin demoras';
-  console.log('📝 Frase buscada (normalizada):');
-  console.log(`   "${fraseObjetivo}"`);
-  console.log(`   Longitud: ${fraseObjetivo.length} caracteres\n`);
+  const frasesObjetivo = [
+    'segui los pasos a continuacion para que tu acr3dit4ci0n se procese sin demoras',
+    'segui los pasos a continuacion para que tu acr3ditacion se procese sin demoras'
+  ];
+  console.log('📝 Frases buscadas (normalizadas):');
+  frasesObjetivo.forEach((frase, i) => {
+    console.log(`   [${i + 1}] "${frase}" (${frase.length} caracteres)`);
+  });
+  console.log();
   
   // Buscar contenedor
   const messagesContainer = document.querySelector('.MuiBox-root.mui-ylizsf');
@@ -90,17 +95,29 @@
     console.log(`      🔤 Normalizado: "${textoCompletoNormalizado.substring(0, 200)}${textoCompletoNormalizado.length > 200 ? '...' : ''}"`);
     console.log(`      Longitud: ${textoCompletoNormalizado.length} caracteres`);
     
-    // Intentar encontrar la frase
-    const indice = textoCompletoNormalizado.indexOf(fraseObjetivo);
-    console.log(`      🔍 .includes(): ${textoCompletoNormalizado.includes(fraseObjetivo)}`);
-    console.log(`      🔍 .indexOf(): ${indice}`);
+    // Intentar encontrar cualquiera de las frases
+    let fraseEncontrada = null;
+    let indiceEncontrado = -1;
     
-    if (indice >= 0) {
-      console.log(`      💡 Encontrado en posición: ${indice}`);
-      console.log(`      💡 Contexto: "...${textoCompletoNormalizado.substring(Math.max(0, indice - 20), indice + fraseObjetivo.length + 20)}..."`);
+    for (let frase of frasesObjetivo) {
+      const indice = textoCompletoNormalizado.indexOf(frase);
+      if (indice >= 0) {
+        fraseEncontrada = frase;
+        indiceEncontrado = indice;
+        break;
+      }
     }
     
-    if (textoCompletoNormalizado.includes(fraseObjetivo)) {
+    console.log(`      🔍 Buscando en 2 variantes...`);
+    if (fraseEncontrada) {
+      console.log(`      ✅ Coincidencia encontrada`);
+      console.log(`      💡 Posición: ${indiceEncontrado}`);
+      console.log(`      💡 Contexto: "...${textoCompletoNormalizado.substring(Math.max(0, indiceEncontrado - 20), indiceEncontrado + fraseEncontrada.length + 20)}..."`);
+    } else {
+      console.log(`      ❌ Ninguna variante coincide`);
+    }
+    
+    if (fraseEncontrada) {
       console.log(`\n   🎯🎯🎯 ¡ENCONTRADO EN TEXTO COMPLETO! 🎯🎯🎯`);
       encontrado = true;
     }
