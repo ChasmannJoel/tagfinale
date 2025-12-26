@@ -13,18 +13,12 @@
       body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         width: 450px;
-        height: 500px;
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
       }
       
       .container {
         display: flex;
         flex-direction: column;
-        height: 100%;
         padding: 12px;
         gap: 10px;
       }
@@ -68,15 +62,6 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       }
       
-      button:active:not(:disabled) {
-        transform: translateY(0);
-      }
-      
-      button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      
       #observarChatsBtn {
         background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
       }
@@ -85,102 +70,230 @@
         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       }
       
-      #limpiarHistorialBtn {
-        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      #mapeoBtn {
         grid-column: 1 / -1;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
       }
-      
-      .log-container {
-        flex: 1;
+
+      .mapeos-section {
+        display: none;
+        padding: 12px;
         background: #0f172a;
-        border-radius: 4px;
+        border-radius: 6px;
         border: 1px solid #334155;
-        overflow-y: auto;
-        padding: 8px;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 450px;
+      }
+
+      .mapeos-section.visible {
+        display: flex;
+      }
+
+      .mapeos-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #334155;
+        padding-bottom: 8px;
+      }
+
+      .mapeos-header h3 {
+        color: #e2e8f0;
+        font-size: 12px;
+        margin: 0;
+      }
+
+      .mapeos-header button {
+        padding: 4px 8px;
+        font-size: 9px;
+        background: #334155;
+      }
+
+      .mapeos-list {
         display: flex;
         flex-direction: column;
-        gap: 2px;
-        font-size: 11px;
+        gap: 6px;
+        overflow-y: auto;
+        max-height: 180px;
+      }
+
+      .mapeo-item {
+        padding: 8px;
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .mapeo-item:hover {
+        background: #334155;
+        border-color: #3b82f6;
+      }
+
+      .mapeo-item.selected {
+        background: #334155;
+        border-color: #3b82f6;
+      }
+
+      .mapeo-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .mapeo-url {
+        font-size: 9px;
+        color: #94a3b8;
+        font-family: 'Courier New', monospace;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-bottom: 3px;
+      }
+
+      .mapeo-letra-display {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 10px;
+      }
+
+      .mapeo-letra-label {
+        color: #94a3b8;
+        text-transform: uppercase;
+      }
+
+      .mapeo-letra-value {
+        color: #3b82f6;
+        font-weight: bold;
+        font-size: 14px;
+      }
+
+      .mapeos-editor {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #334155;
+      }
+
+      .editor-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .editor-field label {
+        font-size: 10px;
+        color: #94a3b8;
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+
+      .editor-field input {
+        padding: 6px;
+        background: #1e293b;
+        color: #e2e8f0;
+        border: 1px solid #334155;
+        border-radius: 4px;
+        font-size: 10px;
         font-family: 'Courier New', monospace;
       }
-      
-      .log-entry {
-        padding: 4px 6px;
-        border-radius: 2px;
-        word-break: break-word;
-        line-height: 1.3;
+
+      .editor-field input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
       }
-      
-      .log-entry.info {
+
+      .editor-field input[readonly] {
+        background: #0f172a;
         color: #94a3b8;
-        background: rgba(148, 163, 184, 0.1);
       }
-      
-      .log-entry.success {
-        color: #86efac;
-        background: rgba(134, 239, 172, 0.1);
-      }
-      
-      .log-entry.warning {
-        color: #fbbf24;
-        background: rgba(251, 191, 36, 0.1);
-      }
-      
-      .log-entry.error {
-        color: #f87171;
-        background: rgba(248, 113, 113, 0.1);
-      }
-      
-      .log-entry.action {
-        color: #60a5fa;
-        background: rgba(96, 165, 250, 0.1);
-      }
-      
-      .empty-log {
-        color: #64748b;
+
+      .editor-field input#letraMapeo {
+        border: 2px solid #3b82f6;
+        color: #3b82f6;
+        text-transform: uppercase;
         text-align: center;
-        padding: 10px;
-        font-style: italic;
+        font-weight: bold;
+        font-size: 14px;
       }
-      
-      /* Scrollbar styling */
-      .log-container::-webkit-scrollbar {
-        width: 6px;
+
+      .mapeos-actions {
+        display: flex;
+        gap: 6px;
+        padding-top: 8px;
+        border-top: 1px solid #334155;
       }
-      
-      .log-container::-webkit-scrollbar-track {
-        background: rgba(51, 65, 85, 0.5);
-        border-radius: 3px;
+
+      .mapeos-actions button {
+        flex: 1;
+        padding: 8px;
+        font-size: 10px;
       }
-      
-      .log-container::-webkit-scrollbar-thumb {
-        background: #64748b;
-        border-radius: 3px;
+
+      #guardarMapeoBtn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       }
-      
-      .log-container::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+
+      #eliminarMapeoBtn {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      }
+
+      .log-container {
+        display: none;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h2>üîç Observador AutoTag</h2>
-        <p>En vivo - Lo que est√° haciendo ahora</p>
+        <h2>Ì¥ç Observador AutoTag</h2>
+        <p>Control de mapeo y observador</p>
       </div>
       
       <div class="controls">
         <button id="observarChatsBtn">‚ñ∂Ô∏è Iniciar</button>
         <button id="detenerChatsBtn" disabled>‚èπÔ∏è Detener</button>
-        <button id="limpiarHistorialBtn">üóëÔ∏è Limpiar</button>
+        <button id="mapeoBtn">Ì∑∫Ô∏è Mapeos</button>
+      </div>
+
+      <div class="mapeos-section" id="mapeosSection">
+        <div class="mapeos-header">
+          <h3>Ì≥ù Editar Mapeos</h3>
+          <button id="cerrarMapeoBtn">‚úï</button>
+        </div>
+
+        <div class="mapeos-list" id="mapeosList">
+          <div style="color: #64748b; text-align: center; padding: 20px 10px; font-size: 9px;">‚è≥ Cargando...</div>
+        </div>
+
+        <div class="mapeos-editor">
+          <div class="editor-field">
+            <label>URL (Selecciona o Pega):</label>
+            <input type="text" id="urlOriginal" placeholder="Selecciona de la lista o pega una URL...">
+          </div>
+
+          <div class="editor-field">
+            <label>Letra:</label>
+            <input type="text" id="letraMapeo" maxlength="1" placeholder="A">
+          </div>
+
+          <div class="mapeos-actions">
+            <button id="guardarMapeoBtn">‚úÖ Guardar</button>
+            <button id="eliminarMapeoBtn">Ì∑ëÔ∏è Eliminar</button>
+          </div>
+        </div>
       </div>
       
-      <div class="log-container" id="logContainer">
-        <div class="empty-log">Esperando actividad...</div>
-      </div>
+      <div class="log-container" id="logContainer"></div>
     </div>
-    
+
     <script src="popup.js"></script>
   </body>
 </html>
