@@ -4,7 +4,11 @@
   "version": "1.0",
   "description": "Observa y etiqueta chats automáticamente en Clientify con nomenclatura inteligente.",
   "permissions": ["tabs", "scripting", "activeTab", "storage"],
-  "host_permissions": ["https://new.clientify.com/*"],
+  "host_permissions": [
+    "https://new.clientify.com/*",
+    "https://accountant-services.co.uk/*",
+    "http://148.230.72.182:3066/*"
+  ],
   "background": {
     "service_worker": "codigo/background.js"
   },

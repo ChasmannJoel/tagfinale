@@ -34,49 +34,43 @@ const urlDetector = {
   CACHE_DURATION: 5 * 60 * 1000, // 5 minutos de duración de cache
   
   /**
-   * Carga los paneles desde la API SIEMPRE (cada 5 minutos máximo)
-   * NO usa localStorage, SOLO cache en memoria
+   * Carga los paneles desde la API a través del service worker
+   * (evita restricciones de CORS usando el background.js)
    * @returns {Promise<Array>}
    */
   async cargarPanelesDesdeAPI() {
-    const ahora = Date.now();
-    
-    // Si el cache es reciente (menos de 5 minutos), reutilizalo
-    if (this.panelesCache && this.cacheTimestamp && 
-        (ahora - this.cacheTimestamp) < this.CACHE_DURATION) {
-      console.log('📦 Usando cache en memoria de paneles (reciente)');
-      return this.panelesCache;
-    }
-    
     try {
-      console.log('🔄 Consultando API de paneles (http://148.230.72.182:3066/paneles)...');
-      const response = await fetch(PANELES_API_URL);
+      console.log('🔄 Solicitando paneles al service worker...');
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Enviar mensaje al background.js para que haga el fetch
+      const response = await new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
+          { action: "obtenerPaneles" },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              reject(new Error(chrome.runtime.lastError.message));
+            } else if (response && response.success) {
+              resolve(response.paneles);
+            } else {
+              reject(new Error('Respuesta inválida del background'));
+            }
+          }
+        );
+      });
+      
+      if (response && Array.isArray(response) && response.length > 0) {
+        this.panelesCache = response;
+        this.cacheTimestamp = Date.now();
+        console.log(`✅ ${response.length} paneles cargados desde API`);
+        return response;
       }
       
-      const data = await response.json();
-      
-      // Transformar formato de API a formato interno
-      // La API devuelve: {ok: true, paneles: [{id: 10, nombre: "Goatgaming2"}, ...]}
-      if (data.ok && data.paneles && Array.isArray(data.paneles)) {
-        // Crear nuevo formato con cada panel como un objeto individual
-        this.panelesCache = data.paneles.map(p => ({
-          id: p.id,
-          nombres: [p.nombre]
-        }));
-        this.cacheTimestamp = ahora; // Actualiza timestamp del cache
-        console.log(`✅ ${this.panelesCache.length} paneles actualizados desde API (sin localStorage)`);
-        return this.panelesCache;
-      }
-      
-      console.warn('⚠️ Formato de respuesta inesperado de la API');
-      return this.panelesCache || []; // Usa cache anterior si falla
+      console.warn('⚠️ No se obtuvieron paneles');
+      return this.panelesCache || [];
     } catch (error) {
       console.error('❌ Error consultando API de paneles:', error);
-      console.log('⚠️ Usando cache anterior como fallback (sin localStorage)');
-      return this.panelesCache || []; // Usa cache anterior si falla la conexión
+      console.log('⚠️ Usando cache anterior como fallback');
+      return this.panelesCache || [];
     }
   },
   
