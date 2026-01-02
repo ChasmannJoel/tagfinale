@@ -394,14 +394,29 @@ const nomenclaturaManager = {
             <div class="panel-nombre">${panel.nombre || 'Sin nombre'}</div>
           </div>
           <div class="panel-actions">
-            <button class="edit-btn" onclick="nomenclaturaManager.editarPanel(${panel.id})">✏️</button>
-            <button class="delete-btn" onclick="nomenclaturaManager.confirmarEliminar(${panel.id})">🗑️</button>
+            <button class="edit-btn" data-action="edit" data-id="${panel.id}">✏️</button>
+            <button class="delete-btn" data-action="delete" data-id="${panel.id}">🗑️</button>
           </div>
         </div>
       `;
     });
 
     listContainer.innerHTML = html;
+    
+    // Agregar event listeners a los botones
+    listContainer.querySelectorAll('[data-action="edit"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(e.target.dataset.id);
+        this.editarPanel(id);
+      });
+    });
+    
+    listContainer.querySelectorAll('[data-action="delete"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(e.target.dataset.id);
+        this.confirmarEliminar(id);
+      });
+    });
   },
 
   mostrarFormulario() {
