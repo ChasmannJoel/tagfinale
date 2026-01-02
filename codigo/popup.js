@@ -397,6 +397,12 @@ const nomenclaturaManager = {
     this.cargarPaneles();
   },
 
+  abrirPanel() {
+    const section = document.getElementById('nomenclaturaSection');
+    section.classList.add('visible');
+    this.cargarPaneles();
+  },
+
   cerrarPanel() {
     const section = document.getElementById('nomenclaturaSection');
     section.classList.remove('visible');
