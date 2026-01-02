@@ -402,6 +402,8 @@ const nomenclaturaManager = {
 
   mostrarFormulario() {
     this.panelesActual = null;
+    document.getElementById('idPanel').value = '';
+    document.getElementById('idPanel').disabled = true;
     document.getElementById('nombrePanel').value = '';
     document.getElementById('nomenclaturaForm').style.display = 'flex';
     document.getElementById('abrirFormPanelBtn').style.display = 'none';
@@ -411,6 +413,7 @@ const nomenclaturaManager = {
   cancelarFormulario() {
     document.getElementById('nomenclaturaForm').style.display = 'none';
     document.getElementById('abrirFormPanelBtn').style.display = 'block';
+    document.getElementById('idPanel').value = '';
     document.getElementById('nombrePanel').value = '';
     this.panelesActual = null;
   },
@@ -420,6 +423,8 @@ const nomenclaturaManager = {
     if (!panel) return;
 
     this.panelesActual = panel;
+    document.getElementById('idPanel').value = panel.id;
+    document.getElementById('idPanel').disabled = false;
     document.getElementById('nombrePanel').value = panel.nombre || '';
     document.getElementById('nomenclaturaForm').style.display = 'flex';
     document.getElementById('abrirFormPanelBtn').style.display = 'none';
@@ -428,6 +433,7 @@ const nomenclaturaManager = {
 
   async guardarPanel() {
     const nombre = document.getElementById('nombrePanel').value.trim();
+    const nuevoId = document.getElementById('idPanel').value.trim();
     
     if (!nombre) {
       alert('⚠️ Ingresa un nombre para el panel');
@@ -438,13 +444,20 @@ const nomenclaturaManager = {
       let response;
       if (this.panelesActual) {
         // Editar panel existente
+        const body = { 
+          secret: this.SECRET,
+          nombre: nombre
+        };
+        
+        // Agregar newId si se cambió
+        if (nuevoId && parseInt(nuevoId) !== this.panelesActual.id) {
+          body.newId = parseInt(nuevoId);
+        }
+        
         response = await fetch(`${this.SERVIDOR_URL}/paneles/${this.panelesActual.id}/`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            secret: this.SECRET,
-            nombre: nombre
-          })
+          body: JSON.stringify(body)
         });
       } else {
         // Crear panel nuevo - numero es obligatorio, usa array con placeholder
@@ -465,6 +478,8 @@ const nomenclaturaManager = {
         const accion = this.panelesActual ? 'actualizado' : 'creado';
         addLog(`✅ Panel ${accion}: ${nombre}`, 'success');
         this.cancelarFormulario();
+        // Pequeño delay para asegurar que el servidor procesó
+        await new Promise(resolve => setTimeout(resolve, 300));
         await this.cargarPaneles();
       } else {
         throw new Error(data.error || 'Error desconocido');
