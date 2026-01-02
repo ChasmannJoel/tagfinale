@@ -286,32 +286,35 @@ const urlDetector = {
       return false;
     }
     
-    // Frases que indican que el cliente cargó (normalizada)
-    const frasesObjetivo = [
-      'segui los pasos a continuacion para que tu acr3dit4ci0n se procese sin demoras',
-      'segui los pasos a continuacion para que tu acr3ditacion se procese sin demoras',
-      'segui los pasos a continuacion para que tu acr3dit4cion se procese sin demoras'
+    // Palabras clave que indican carga (más flexible)
+    const palabrasClave = [
+      'acreditacion', // Acreditación
+      'acredit4cion', // Variante con números
+      'acredit4ci0n',
+      'acr3ditacion',
+      'acr3dit4cion',
+      'pasos a continuacion', // Frase completa
+      'pasos a continuar',
+      'sigue los pasos'
     ];
-    console.log(`🎯 [Carga] Buscando 3 variantes de frase de carga...`);
+    
+    console.log(`🎯 [Carga] Buscando palabras clave de carga...`);
     
     // Obtener TODOS los mensajes
     const allMessages = messagesContainer.querySelectorAll('div[id^="message-"]');
+    console.log(`📊 [Carga] Total de mensajes encontrados: ${allMessages.length}`);
     
     for (const message of allMessages) {
-      // NO filtrar por timestamp - analizar TODOS los mensajes
-      // (los mensajes de carga pueden no tener timestamp visible)
-      
       // Verificar si es mensaje del AGENTE (no del cliente)
-      // Los mensajes del agente tienen clase específica o están alineados a la izquierda
       const esDelCliente = message.querySelector('[data-contact-message="true"]') || 
                           message.classList.contains('contact-message');
       
-      console.log(`🔍 [Carga] Mensaje analizado - Cliente: ${esDelCliente}, Texto: ${message.textContent.substring(0, 50)}...`);
-      
       if (esDelCliente) continue; // Saltar mensajes del cliente
       
-      // Buscar la frase en TODO el texto del mensaje (no solo párrafos)
-      const textoCompleto = message.textContent;
+      // Buscar la frase en TODO el texto del mensaje
+      const textoCompleto = message.textContent || '';
+      
+      // Normalizar: quitar acentos, puntuación y espacios extra
       const textoNormalizado = textoCompleto
         .toLowerCase()
         .replace(/[áàäâ]/g, 'a')
@@ -319,27 +322,25 @@ const urlDetector = {
         .replace(/[íìïî]/g, 'i')
         .replace(/[óòöô]/g, 'o')
         .replace(/[úùüû]/g, 'u')
-        .replace(/[.,!?¿¡]/g, '')
-        .replace(/\s+/g, ' ')
+        .replace(/[ñ]/g, 'n')
+        .replace(/[.,!?¿¡;:]/g, ' ')  // Reemplazar puntuación con espacio (no remover)
+        .replace(/\s+/g, ' ')         // Normalizar espacios
         .trim();
       
-      console.log(`🔍 [Carga] Texto normalizado completo: ${textoNormalizado.substring(0, 100)}`);
+      console.log(`📝 [Carga] Texto encontrado (primeros 80 chars): "${textoNormalizado.substring(0, 80)}"`);
       
-      // Buscar cualquiera de las frases
-      let fraseEncontrada = null;
-      for (let frase of frasesObjetivo) {
-        if (textoNormalizado.includes(frase)) {
-          fraseEncontrada = frase;
-          break;
+      // Buscar cualquiera de las palabras clave
+      let palabraEncontrada = null;
+      for (const palabra of palabrasClave) {
+        if (textoNormalizado.includes(palabra)) {
+          palabraEncontrada = palabra;
+          console.log(`✅ [Carga] Palabra clave ENCONTRADA: "${palabra}"`);
+          return true;
         }
-      }
-      
-      if (fraseEncontrada) {
-        console.log('✅ [URL Detector] Mensaje de CARGA detectado en texto completo');
-        return true;
       }
     }
     
+    console.log('❌ [Carga] Ninguna palabra clave de carga encontrada');
     return false;
   },
   

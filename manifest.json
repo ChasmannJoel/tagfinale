@@ -21,7 +21,7 @@
   "content_scripts": [
     {
       "matches": ["https://new.clientify.com/team-inbox/*"],
-      "js": ["codigo/hideCyberBoti.js", "codigo/chatOpener.js", "codigo/chatTagger.js", "codigo/elementos observer/url-mapper.js", "codigo/elementos observer/url-detector.js", "codigo/chatObserver.js", "codigo/content.js"]
+      "js": ["codigo/hideCyberBoti.js", "codigo/chatOpener.js", "codigo/chatTagger.js", "codigo/elementos observer/url-mapper.js", "codigo/elementos observer/url-detector.js", "codigo/alertManager.js", "codigo/chatObserver.js", "codigo/content.js"]
     }
   ]
 }

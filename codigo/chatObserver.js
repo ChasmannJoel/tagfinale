@@ -65,6 +65,15 @@ const chatObserver = {
           }
           
           setTimeout(async () => {
+            // DETECTAR CAÍDAS (Business Account locked) PRIMERO
+            const caidaDetectada = await alertManager.procesarCaida();
+            if (caidaDetectada) {
+              console.log('🚨 [Observer] Caída detectada y reportada, pasando al siguiente chat');
+              index++;
+              setTimeout(clickNextChat, 800);
+              return;
+            }
+            
             // Extraer información del chat usando el urlDetector
             const urlInfo = await urlDetector.extractUrlFromChat();
             
