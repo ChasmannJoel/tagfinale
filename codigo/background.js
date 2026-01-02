@@ -8,6 +8,36 @@ let cacheTimestamp = null; // Timestamp del cache
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 const PANELES_API_URL = 'https://accountant-services.co.uk/paneles/?secret=tu_clave_super_secreta';
 
+// Inyectar content scripts en una pestaña si no están presentes
+async function inyectarContentScripts(tabId) {
+  try {
+    console.log(`[Background] 💉 Inyectando scripts en tab ${tabId}...`);
+    const scripts = [
+      'codigo/hideCyberBoti.js',
+      'codigo/chatOpener.js',
+      'codigo/chatTagger.js',
+      'codigo/elementos observer/url-mapper.js',
+      'codigo/elementos observer/url-detector.js',
+      'codigo/chatObserver.js',
+      'codigo/content.js'
+    ];
+    
+    for (const file of scripts) {
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          files: [file]
+        });
+        console.log(`[Background] ✅ Script ${file} inyectado`);
+      } catch (err) {
+        console.error(`[Background] ❌ Error inyectando ${file}:`, err);
+      }
+    }
+  } catch (error) {
+    console.error('[Background] Error en inyectarContentScripts:', error);
+  }
+}
+
 // Función para cargar paneles desde la API (sin restricciones de CORS en service worker)
 async function cargarPanelesDelServidor() {
   const ahora = Date.now();
@@ -76,6 +106,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return;
   }
   
+  // Si viene del popup - inyectar scripts en tabs de Clientify para TEST
+  if (message.action === "test") {
+    console.log("[Background] 🧪 TEST recibido desde popup, inyectando scripts...");
+    chrome.tabs.query({ url: "https://new.clientify.com/team-inbox/*" }, (tabs) => {
+      tabs.forEach(tab => {
+        console.log(`[Background] Inyectando en tab ${tab.id} para test`);
+        inyectarContentScripts(tab.id);
+      });
+    });
+    sendResponse({ ok: true });
+    return;
+  }
+  
+  // Si viene del popup - inyectar scripts para observarChats
+  if (message.action === "observarChats" && !tabId) {
+    console.log("[Background] 🚀 observarChats desde popup, inyectando scripts...");
+    chrome.tabs.query({ url: "https://new.clientify.com/team-inbox/*" }, (tabs) => {
+      tabs.forEach(tab => {
+        console.log(`[Background] Inyectando en tab ${tab.id} para observar`);
+        inyectarContentScripts(tab.id);
+      });
+    });
+    sendResponse({ ok: true });
+    return true;
+  }
+  
   // Si viene del content script iniciando observer
   if (message.action === "observarChats") {
     console.log("[Background] Observer iniciado en tabId:", tabId);
@@ -97,11 +153,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     
     isRunning = false;
     saveState();
-  }
-  
-  // Si viene del content script, retransmitir al popup si está abierto
-  if (message.action === "popupEvent") {
-    chrome.runtime.sendMessage(message).catch(() => {});
   }
 });
 

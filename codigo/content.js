@@ -4,6 +4,13 @@ console.log("🚀 [AutoTag] Script cargado. Esperando comandos...");
 // --- Handlers de mensajes ---
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("📩 [AutoTag] Mensaje recibido desde popup:", message);
+  
+  if (message.action === "test") {
+    console.log("🧪 [AutoTag] TEST recibido - Content script está funcionando!");
+    sendResponse({ ok: true, message: "Content script funcionando" });
+    return;
+  }
+  
   if (message.action === "abrirChats") {
     console.log("▶️ [AutoTag] Iniciando apertura de chats...");
     chatOpener.startChatIteration();

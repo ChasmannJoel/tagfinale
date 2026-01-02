@@ -5,6 +5,8 @@ const popupState = {
   maxEntries: 100
 };
 
+console.log('popup.js cargado correctamente');
+
 function loadStoredState() {
   chrome.storage.local.get(['popupState'], (result) => {
     if (result.popupState) {
@@ -61,44 +63,6 @@ function updateButtonStates(running) {
   document.getElementById('detenerChatsBtn').disabled = !running;
   saveState();
 }
-
-document.getElementById("observarChatsBtn").addEventListener("click", async () => {
-  const tabs = await chrome.tabs.query({ url: "https://new.clientify.com/team-inbox/*" });
-  
-  if (tabs.length === 0) {
-    addLog('❌ No hay pestañas de Clientify abiertas', 'error');
-    return;
-  }
-  
-  tabs.forEach(tab => {
-    chrome.tabs.sendMessage(tab.id, { action: "observarChats" }).catch(() => {});
-  });
-  
-  updateButtonStates(true);
-  addLog(`��� Observador iniciado en ${tabs.length} pestaña(s)`, 'success');
-});
-
-document.getElementById("detenerChatsBtn").addEventListener("click", async () => {
-  const tabs = await chrome.tabs.query({ url: "https://new.clientify.com/team-inbox/*" });
-  
-  if (tabs.length === 0) {
-    addLog('❌ No hay pestañas de Clientify abiertas', 'error');
-    return;
-  }
-  
-  // Enviar mensaje al background para detener
-  chrome.runtime.sendMessage({ action: "detenerChats" }).catch(() => {
-    console.error('Error enviando mensaje al background');
-  });
-  
-  // También enviar a todos los tabs activos
-  tabs.forEach(tab => {
-    chrome.tabs.sendMessage(tab.id, { action: "detenerChats" }).catch(() => {});
-  });
-  
-  updateButtonStates(false);
-  addLog(`⏹️ Observador detenido en ${tabs.length} pestaña(s)`, 'warning');
-});
 
 // Sistema de Mapeos
 const mapeoModal = {
@@ -308,6 +272,7 @@ document.getElementById("eliminarMapeoBtn").addEventListener("click", () => {
 const nomenclaturaManager = {
   paneles: [],
   panelesActual: null,
+  numerosActuales: [],
   SERVIDOR_URL: 'https://accountant-services.co.uk',
   SECRET: 'tu_clave_super_secreta',
 
@@ -339,10 +304,95 @@ const nomenclaturaManager = {
     document.getElementById('cancelarFormBtn').addEventListener('click', () => {
       this.cancelarFormulario();
     });
-  },
 
-  abrirPanel() {
-    const section = document.getElementById('nomenclaturaSection');
+    document.getElementById('cerrarNumerosBtn').addEventListener('click', () => {
+      this.cerrarNumerosSection();
+    });
+
+    document.getElementById('agregarNumeroBtn').addEventListener('click', () => {
+      this.agregarNumero();
+    });
+
+    // Permitir agregar número al presionar Enter
+    document.getElementById('nuevoNumero').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        this.agregarNumero();
+      }
+    });
+
+    // Event listeners para botones de arranque/detener
+    document.getElementById("observarChatsBtn").addEventListener("click", async () => {
+      console.log('Click en observar chats');
+      addLog('🚀 Iniciando observador de chats...', 'info');
+      
+      try {
+        // Enviar al background primero (que inyectará scripts)
+        chrome.runtime.sendMessage(
+          { action: "observarChats" },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              console.error('Background error:', chrome.runtime.lastError);
+              addLog('⚠️ Error en background: ' + chrome.runtime.lastError.message, 'error');
+            }
+          }
+        );
+        
+        // Luego enviar a las tabs (con retraso para inyección)
+        setTimeout(async () => {
+          const tabs = await chrome.tabs.query({ url: "https://new.clientify.com/team-inbox/*" });
+          console.log('Tabs encontrados:', tabs.length);
+          
+          if (tabs.length === 0) {
+            addLog('⚠️ No hay pestañas de Clientify abiertas', 'warning');
+            return;
+          }
+          
+          tabs.forEach((tab, index) => {
+            chrome.tabs.sendMessage(tab.id, { action: "observarChats" }, (response) => {
+              if (chrome.runtime.lastError) {
+                console.error(`Tab ${index} error:`, chrome.runtime.lastError);
+              } else {
+                console.log(`Tab ${index} respondió a observarChats`);
+              }
+            });
+          });
+          
+          updateButtonStates(true);
+          addLog(`✅ Observador iniciado en ${tabs.length} pestaña(s)`, 'success');
+        }, 500); // Esperar 500ms para que se inyecten los scripts
+      } catch (error) {
+        console.error('Error en observar:', error);
+        addLog('❌ Error: ' + error.message, 'error');
+      }
+    });
+
+    document.getElementById("detenerChatsBtn").addEventListener("click", async () => {
+      console.log('Click en detener chats');
+      try {
+        const tabs = await chrome.tabs.query({ url: "https://new.clientify.com/team-inbox/*" });
+        
+        if (tabs.length === 0) {
+          addLog('No hay pestañas de Clientify abiertas', 'error');
+          return;
+        }
+        
+        chrome.runtime.sendMessage({ action: "detenerChats" }).catch(() => {
+          console.error('Error enviando mensaje al background');
+        });
+        
+        tabs.forEach(tab => {
+          chrome.tabs.sendMessage(tab.id, { action: "detenerChats" }).catch(() => {});
+        });
+        
+        updateButtonStates(false);
+        addLog('Observador detenido', 'warning');
+      } catch (error) {
+        console.error('Error en detener:', error);
+        addLog('Error: ' + error.message, 'error');
+      }
+    });
+
+    // Botones para mapeos y nomenclatura
     section.classList.add('visible');
     this.cargarPaneles();
   },
@@ -351,6 +401,7 @@ const nomenclaturaManager = {
     const section = document.getElementById('nomenclaturaSection');
     section.classList.remove('visible');
     this.cancelarFormulario();
+    this.cerrarNumerosSection();
   },
 
   async cargarPaneles() {
@@ -403,6 +454,7 @@ const nomenclaturaManager = {
             <div class="panel-nombre">${panel.nombre || 'Sin nombre'}</div>
           </div>
           <div class="panel-actions">
+            <button class="numeros-btn" data-action="numeros" data-id="${panel.id}">📱</button>
             <button class="edit-btn" data-action="edit" data-id="${panel.id}">✏️</button>
             <button class="delete-btn" data-action="delete" data-id="${panel.id}">🗑️</button>
           </div>
@@ -413,6 +465,13 @@ const nomenclaturaManager = {
     listContainer.innerHTML = html;
     
     // Agregar event listeners a los botones
+    listContainer.querySelectorAll('[data-action="numeros"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(e.target.dataset.id);
+        this.abrirNumerosSection(id);
+      });
+    });
+
     listContainer.querySelectorAll('[data-action="edit"]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = parseInt(e.target.dataset.id);
@@ -431,11 +490,11 @@ const nomenclaturaManager = {
   mostrarFormulario() {
     this.panelesActual = null;
     document.getElementById('idPanel').value = '';
-    document.getElementById('idPanel').disabled = true;
+    document.getElementById('idPanel').disabled = false;
     document.getElementById('nombrePanel').value = '';
     document.getElementById('nomenclaturaForm').style.display = 'flex';
     document.getElementById('abrirFormPanelBtn').style.display = 'none';
-    document.getElementById('nombrePanel').focus();
+    document.getElementById('idPanel').focus();
   },
 
   cancelarFormulario() {
@@ -461,10 +520,21 @@ const nomenclaturaManager = {
 
   async guardarPanel() {
     const nombre = document.getElementById('nombrePanel').value.trim();
-    const nuevoId = document.getElementById('idPanel').value.trim();
+    const idInput = document.getElementById('idPanel').value.trim();
     
     if (!nombre) {
       alert('⚠️ Ingresa un nombre para el panel');
+      return;
+    }
+
+    if (!idInput) {
+      alert('⚠️ Ingresa un ID para el panel');
+      return;
+    }
+
+    const nuevoId = parseInt(idInput);
+    if (isNaN(nuevoId) || nuevoId < 1) {
+      alert('⚠️ El ID debe ser un número válido mayor a 0');
       return;
     }
 
@@ -478,8 +548,8 @@ const nomenclaturaManager = {
         };
         
         // Agregar newId si se cambió
-        if (nuevoId && parseInt(nuevoId) !== this.panelesActual.id) {
-          body.newId = parseInt(nuevoId);
+        if (nuevoId !== this.panelesActual.id) {
+          body.newId = nuevoId;
         }
         
         response = await fetch(`${this.SERVIDOR_URL}/paneles/${this.panelesActual.id}/`, {
@@ -495,7 +565,7 @@ const nomenclaturaManager = {
           body: JSON.stringify({ 
             secret: this.SECRET,
             nombre: nombre,
-            numero: ["0"] // Array con valor por defecto
+            numero: [] // Array vacío, se agregarán números después
           })
         });
       }
@@ -504,7 +574,7 @@ const nomenclaturaManager = {
 
       if (data.ok) {
         const accion = this.panelesActual ? 'actualizado' : 'creado';
-        addLog(`✅ Panel ${accion}: ${nombre}`, 'success');
+        addLog(`✅ Panel ${accion}: ${nombre} (ID: ${nuevoId})`, 'success');
         
         // Invalidar cache en background para que recargue
         chrome.runtime.sendMessage({ action: 'invalidarCachePaneles' });
@@ -557,6 +627,128 @@ const nomenclaturaManager = {
       alert(`❌ Error: ${error.message}`);
       addLog(`❌ Error eliminando panel: ${error.message}`, 'error');
     }
+  },
+
+  abrirNumerosSection(id) {
+    const panel = this.paneles.find(p => p.id === id);
+    if (!panel) return;
+
+    this.panelesActual = panel;
+    this.numerosActuales = Array.isArray(panel.numero) ? [...panel.numero] : [];
+
+    // Mostrar la sección de números con el nombre del panel
+    document.getElementById('nombrePanelNumeros').textContent = panel.nombre;
+    document.getElementById('numerosSection').classList.add('visible');
+    document.getElementById('nomenclaturaForm').style.display = 'none';
+    document.getElementById('abrirFormPanelBtn').style.display = 'none';
+
+    // Renderizar números existentes
+    this.renderizarNumeros();
+
+    // Limpiar input y enfocarlo
+    document.getElementById('nuevoNumero').value = '';
+    document.getElementById('nuevoNumero').focus();
+  },
+
+  cerrarNumerosSection() {
+    document.getElementById('numerosSection').classList.remove('visible');
+    document.getElementById('abrirFormPanelBtn').style.display = 'block';
+    this.panelesActual = null;
+    this.numerosActuales = [];
+  },
+
+  renderizarNumeros() {
+    const listContainer = document.getElementById('numerosList');
+
+    if (this.numerosActuales.length === 0) {
+      listContainer.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 15px; font-size: 10px;">Sin números agregados</div>';
+      return;
+    }
+
+    let html = '';
+    this.numerosActuales.forEach((numero, index) => {
+      html += `
+        <div class="numero-item">
+          <span class="numero-valor">${numero}</span>
+          <button class="numero-delete" data-index="${index}">✕</button>
+        </div>
+      `;
+    });
+
+    listContainer.innerHTML = html;
+
+    // Agregar event listeners a los botones de eliminar
+    listContainer.querySelectorAll('.numero-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        this.eliminarNumero(index);
+      });
+    });
+  },
+
+  async agregarNumero() {
+    const input = document.getElementById('nuevoNumero');
+    const numero = input.value.trim();
+
+    if (!numero) {
+      alert('⚠️ Ingresa un número de teléfono');
+      return;
+    }
+
+    // Evitar duplicados
+    if (this.numerosActuales.includes(numero)) {
+      alert('⚠️ Este número ya está en la lista');
+      input.focus();
+      return;
+    }
+
+    this.numerosActuales.push(numero);
+    this.renderizarNumeros();
+    input.value = '';
+    input.focus();
+
+    // Guardar cambios en el servidor
+    await this.guardarNumerosPanel();
+  },
+
+  eliminarNumero(index) {
+    this.numerosActuales.splice(index, 1);
+    this.renderizarNumeros();
+
+    // Guardar cambios en el servidor
+    this.guardarNumerosPanel();
+  },
+
+  async guardarNumerosPanel() {
+    if (!this.panelesActual) return;
+
+    try {
+      const response = await fetch(`${this.SERVIDOR_URL}/paneles/${this.panelesActual.id}/`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          secret: this.SECRET,
+          numero: this.numerosActuales
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.ok) {
+        addLog(`✅ Números actualizados para panel "${this.panelesActual.nombre}"`, 'success');
+        
+        // Actualizar el panel local
+        const panelIndex = this.paneles.findIndex(p => p.id === this.panelesActual.id);
+        if (panelIndex >= 0) {
+          this.paneles[panelIndex].numero = [...this.numerosActuales];
+        }
+      } else {
+        throw new Error(data.error || 'Error desconocido');
+      }
+    } catch (error) {
+      console.error('Error guardando números:', error);
+      addLog(`❌ Error guardando números: ${error.message}`, 'error');
+    }
   }
 };
 
@@ -601,8 +793,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+// Ejecutar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded - Inicializando popup...');
+    loadStoredState();
+    addLog('Panel cargado', 'info');
+    nomenclaturaManager.inicializar();
+  });
+} else {
+  // El DOM ya está listo
+  console.log('DOM ya estaba listo - Inicializando popup...');
   loadStoredState();
   addLog('Panel cargado', 'info');
   nomenclaturaManager.inicializar();
-});
+}
