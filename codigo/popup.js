@@ -300,7 +300,7 @@ const nomenclaturaManager = {
   paneles: [],
   panelesActual: null,
   SERVIDOR_URL: 'https://accountant-services.co.uk',
-  SECRET: '?secret=tu_clave_super_secreta',
+  SECRET: 'tu_clave_super_secreta',
 
   inicializar() {
     this.agregarEventListeners();
@@ -435,22 +435,27 @@ const nomenclaturaManager = {
     }
 
     try {
-      const url = `${this.SERVIDOR_URL}/paneles${this.SECRET}`;
-      
       let response;
       if (this.panelesActual) {
         // Editar panel existente
-        response = await fetch(`${this.SERVIDOR_URL}/paneles/${this.panelesActual.id}${this.SECRET}`, {
+        response = await fetch(`${this.SERVIDOR_URL}/paneles/${this.panelesActual.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nombre })
+          body: JSON.stringify({ 
+            secret: this.SECRET,
+            nombre: nombre
+          })
         });
       } else {
-        // Crear panel nuevo
-        response = await fetch(url, {
+        // Crear panel nuevo - numero es obligatorio, usa array vacío por defecto
+        response = await fetch(`${this.SERVIDOR_URL}/paneles`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nombre })
+          body: JSON.stringify({ 
+            secret: this.SECRET,
+            nombre: nombre,
+            numero: [] // Array vacío según especificación
+          })
         });
       }
 
@@ -484,7 +489,7 @@ const nomenclaturaManager = {
 
   async eliminarPanel(id) {
     try {
-      const response = await fetch(`${this.SERVIDOR_URL}/paneles/${id}${this.SECRET}`, {
+      const response = await fetch(`${this.SERVIDOR_URL}/paneles/${id}?secret=${encodeURIComponent(this.SECRET)}`, {
         method: 'DELETE'
       });
 
